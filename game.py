@@ -4,7 +4,7 @@ import os
 import sys
 import re
 import codecs
-from lxml import etree
+import xml.etree.ElementTree as etree
 
 class API:
 	def __init__(self, player, rooms):
@@ -202,6 +202,8 @@ def load():
 		contents = fo.read().replace("\r\n", "\n")
 	# parse comments
 	contents = re.sub("<!--.+?-->", "", contents)
+	# encode utf-8
+	contents = contents.encode("utf-8")
 	# parse xml
 	root = etree.fromstring(contents)
 	if root.tag != "main":
@@ -209,14 +211,14 @@ def load():
 		print "In file '"+os.path.join(folder_name, "main.xml")+"'"
 		sys.exit(1)
 	main_data = {"meta":[]}
-	for element in root.iterchildren():
+	for element in root.getchildren():
 		if element.tag == "meta":
 			main_data[element.tag]+=element.items()
 		elif element.tag in ["description", "intro"]:
 			main_data[element.tag] = "\n".join([" ".join(i.split()) for i in element.text.split("\n") if i.strip() != ""])
 		elif element.tag in ["settings"]:
 			main_data[element.tag] = []
-			for subelement in element.iterchildren():
+			for subelement in element.getchildren():
 				if subelement.tag in ["startroom"]:
 					main_data[element.tag].append([subelement.tag, subelement.items()])
 
@@ -227,20 +229,22 @@ def load():
 			contents = fo.read().replace("\r\n", "\n")
 		# parse comments
 		contents = re.sub("<!--.+?-->", "", contents)
+		# encode utf-8
+		contents = contents.encode("utf-8")
 		# parse xml
 		root = etree.fromstring(contents)
 		if root.tag != "room":
 			print "Error: Invalid format: root tag is not 'room'"
 			sys.exit(1)
 		room_data = {}
-		for element in root.iterchildren():
+		for element in root.getchildren():
 			if element.tag in ["script"]:
 				room_data[element.tag] = element.items()
 			elif element.tag in ["description"]:
 				room_data[element.tag] = "\n".join([" ".join(i.split()) for i in element.text.split("\n") if i.strip() != ""])
 			elif element.tag in ["doors", "items"]:
 				room_data[element.tag] = []
-				for subelement in element.iterchildren():
+				for subelement in element.getchildren():
 					if subelement.tag in ["door", "item"]:
 						room_data[element.tag].append(subelement.items())
 		try:
