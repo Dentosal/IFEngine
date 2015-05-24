@@ -64,12 +64,11 @@ class Room:
 		self.description = description
 		self.doors = doors
 		self.items = items
+		self.script_file = None
+		self.script_module = None
 		if script_file != None:
 			self.script_file = script_file[0][-1]
-			self.script_module = imp.load_source("tmp", folder_name+self.script_file)
-		else:
-			self.script_file = None
-			self.script_module = None
+			self.script_module = imp.load_source("tmp"+str(id(self)), folder_name+self.script_file) # unique id for tmp module
 	def at(self, direction):
 		for d in self.doors:
 			if [i for i in d if i[0] == "direction"][0][1] == direction:
@@ -87,6 +86,7 @@ class Room:
 	def get_directions(self):
 		return [[a[1] for a in d if a[0]=="direction"][0] for d in self.doors]
 	def onenter(self, player):
+		print self.script_module, dir(self.script_module)
 		if self.script_module != None:
 			try:
 				x = self.script_module.onenter(api.request, player.variables, player.inventory, self.items)
@@ -163,13 +163,10 @@ def main():
 			sys.exit(0)
 
 		# regex
-		go_direction = re.findall("^(?:go)\\s+([a-zA-Z\\-_]+)$", inp, re.IGNORECASE)
+		go_direction = re.findall("^(?:go)\\s+("+"|".join(player.location.get_directions())+")$", inp, re.IGNORECASE)
 
 		# compare
 		if go_direction != []:
-			if not go_direction[0] in player.location.get_directions():
-				print go_direction[0]+": Invalid direction."
-				continue
 			if player.go(go_direction[0]):
 				print ""
 				print player.location.description
