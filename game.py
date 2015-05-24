@@ -204,6 +204,9 @@ def load():
 
 	with codecs.open(os.path.join(folder_name, "main.xml"), "r", "utf-8") as fo:
 		contents = fo.read().replace("\r\n", "\n")
+	# parse comments
+	contents = re.sub("<!--.+?-->", "", contents)
+	# parse xml
 	root = etree.fromstring(contents)
 	if root.tag != "main":
 		print "Error: Invalid format: root tag is not 'main'"
@@ -226,6 +229,9 @@ def load():
 			continue
 		with codecs.open(os.path.join(folder_name, file_name), "r", "utf-8") as fo:
 			contents = fo.read().replace("\r\n", "\n")
+		# parse comments
+		contents = re.sub("<!--.+?-->", "", contents)
+		# parse xml
 		root = etree.fromstring(contents)
 		if root.tag != "room":
 			print "Error: Invalid format: root tag is not 'room'"
