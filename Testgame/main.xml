@@ -1,0 +1,16 @@
+<main>
+	<meta author="Dentosal"/>
+	<meta created="28.4.2015"/>
+	<description>
+		Just a stupid test game.
+		Made to test stuff.
+	</description>
+	<settings>
+		<startroom file="testroom.xml"/>
+	</settings>
+	<intro>
+		Welcome to the test game.
+		Ääkkösiä
+		<!-- comment -->
+	</intro>
+</main>

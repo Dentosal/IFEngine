@@ -1,0 +1,14 @@
+<room name="asdf">
+	<description>
+		This is just normal test room.
+		Second line of description.
+	</description>
+	<items>
+		<item name="solapullo"/>
+	</items>
+	<doors>
+		<door file="testroom.xml" direction="north" locked="0"/>
+		<door file="testroom2.xml" direction="west" locked="1"/>
+	</doors>
+	<script file="testroom.py"/>
+</room>
