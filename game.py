@@ -6,6 +6,41 @@ import re
 import codecs
 from lxml import etree
 
+class API:
+	def __init__(self, player, rooms):
+		self.player = player
+		self.rooms = rooms
+	def request(self, req):
+		print "request:", req
+		req = req.split(":")
+		# toggle door `file.xml:doors:north:locked:0`
+		if len(req) == 5 and req[1] == "doors" and req[3] == "locked":
+			r = rooms.find_room(req[0])
+			if r == None:
+				print "Invalid api request: '"+(":".join(req))+"'"
+				print "Room file not found."
+				sys.exit(1)
+			if not req[2] in r.get_directions():
+				print "Invalid api request: '"+(":".join(req))+"'"
+				print "Invalid direction: '"+req[2]+"'"
+				sys.exit(1)
+			for d in range(len(r.doors)):
+				for i in range(len(r.doors[d])):
+					if r.doors[d][i][0]=="direction":
+						if r.doors[d][i][1] == req[2]:
+							for w in range(len(r.doors[d])):
+								if r.doors[d][w][0]=="locked":
+									r.doors[d][w] = ["locked", str(int(req[4]))]
+
+		else:
+			print "Invalid api request: '"+(":".join(req))+"'"
+			sys.exit(1)
+
+
+
+
+
+
 class Rooms:
 	def __init__(self):
 		self.rooms = []
@@ -54,7 +89,7 @@ class Room:
 	def onenter(self, player):
 		if self.script_module != None:
 			try:
-				x = self.script_module.onenter(player.variables, player.inventory, self.items)
+				x = self.script_module.onenter(api.request, player.variables, player.inventory, self.items)
 			except:
 				print "Script '"+self.script_file+"' crashed."
 				sys.exit(1)
@@ -65,7 +100,7 @@ class Room:
 	def runcommand(self, command, player):
 		if self.script_module != None:
 			try:
-				x = self.script_module.oncommand(command, player.variables, player.inventory, self.items)
+				x = self.script_module.oncommand(api.request, command, player.variables, player.inventory, self.items)
 			except:
 				print "Script '"+self.script_file+"' crashed."
 				sys.exit(1)
@@ -85,6 +120,7 @@ class Player:
 		self.location = startroom
 		self.inventory = []
 		self.variables = {} # cross-script variables
+	def init_later(self):
 		self.location.onenter(self)
 	def go(self, direction):
 		""" Change room """
@@ -99,15 +135,16 @@ class Player:
 
 
 def main():
-	global folder_name
+	global folder_name, api, rooms
 	# load game
 	folder_name = [i for i in sys.argv[1:] if not i.startswith("-")][0]
 	rooms, main_data, startroom = load()
 
 	# init game
 	rooms.link()
-
 	player = Player(rooms.find_room(startroom))
+	api = API(player, rooms)
+	player.init_later()
 
 	# print some info
 	if "intro" in main_data.keys():

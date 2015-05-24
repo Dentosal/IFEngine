@@ -75,7 +75,11 @@ Script file
 Script file contains python script that can be used to create additional functionality. Script files MUST have file name extension `py` and they MUST be valid Python files. The version of python is same as the version that is installed on the system.
 
 Script file must have following functions:
-* `onenter(dict variables, list inventory, list items)` &#8594; `dict variables, list inventory, list items`
-* `oncommand(str command, dict variables, list inventory, list items)` &#8594; `bool result, dict variables, list inventory, list items`
+* `onenter(dict variables, list inventory, list items)` &#8594; `function apirequest, dict variables, list inventory, list items`
+* `oncommand(str command, dict variables, list inventory, list items)` &#8594; `function apirequest, bool result, dict variables, list inventory, list items`
 
 The `bool result` of oncommand describes wheter command succeeded or not. It MUST be `True` on success and `False` otherwise.
+
+Script API
+----------
+ TODO
