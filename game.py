@@ -183,6 +183,10 @@ def main():
 				print "Items in inventory:"
 				for i in player.inventory:
 					print " * "+str(i)
+		elif inp == "quit" or inp == "q":
+			print "Really quit? (y/n)"
+			if raw_input().lower().startswith("y"):
+				sys.exit(0)
 		else:
 			if not player.runcommand(inp):
 				print inp+": How's that?"
