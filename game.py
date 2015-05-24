@@ -86,7 +86,6 @@ class Room:
 	def get_directions(self):
 		return [[a[1] for a in d if a[0]=="direction"][0] for d in self.doors]
 	def onenter(self, player):
-		print self.script_module, dir(self.script_module)
 		if self.script_module != None:
 			try:
 				x = self.script_module.onenter(api.request, player.variables, player.inventory, self.items)
@@ -163,7 +162,7 @@ def main():
 			sys.exit(0)
 
 		# regex
-		go_direction = re.findall("^(?:go)\\s+("+"|".join(player.location.get_directions())+")$", inp, re.IGNORECASE)
+		go_direction = re.findall("^(?:go)?\\s*("+"|".join(player.location.get_directions())+")$", inp, re.IGNORECASE)
 
 		# compare
 		if go_direction != []:
